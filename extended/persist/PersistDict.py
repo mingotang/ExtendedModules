@@ -12,6 +12,7 @@ class BasePersistDict(Mapping, Sized):
         Mapping.__init__(self)
         Sized.__init__(self)
 
+        os.makedirs(path, exist_ok=True)
         self.__path__ = path
 
     def __getitem__(self, key: str):
@@ -19,6 +20,18 @@ class BasePersistDict(Mapping, Sized):
 
     def __setitem__(self, key: str, value):
         raise NotImplementedError
+
+    def __check_postfix__(self, key: str):
+        if '.' in key:
+            if key.split('.')[-1] == self.__postfix__:
+                return key
+            else:
+                return '{}.{}'.format(key, self.__postfix__)
+        else:
+            return '{}.{}'.format(key, self.__postfix__)
+
+    def __sub_file__(self, file_name: str):
+        return os.path.join(self.__path__, file_name)
 
     def get(self, k: str, default=None):
         try:
@@ -33,7 +46,7 @@ class BasePersistDict(Mapping, Sized):
         for tag in os.listdir(self.__path__):
             if tag.startswith('.'):
                 continue
-            elif tag.endswith(self.__postfix__):
+            elif not tag.endswith(self.__postfix__):
                 continue
             else:
                 yield '.'.join(tag.split('.')[:-1])
@@ -63,3 +76,25 @@ class BasePersistDict(Mapping, Sized):
         assert hasattr(mapping, 'items')
         for k, v in mapping.items():
             self.__setitem__(k, v)
+
+
+class TextDict(BasePersistDict):
+    __postfix__ = 'txt'
+
+    def __init__(self, path: str, encoding: str = 'utf-8'):
+        BasePersistDict.__init__(self, path)
+
+        self.__encoding__ = encoding
+
+    def __setitem__(self, key: str, value):
+        full_key = self.__check_postfix__(key)
+        with open(self.__sub_file__(full_key), mode='w', encoding=self.__encoding__) as f:
+            f.write(value)
+
+    def __getitem__(self, key: str):
+        full_key = self.__check_postfix__(key)
+        try:
+            with open(self.__sub_file__(full_key), mode='r', encoding=self.__encoding__) as f:
+                return f.read()
+        except FileNotFoundError:
+            raise KeyError('no such key as {}'.format(key))
