@@ -16,8 +16,18 @@ class CountingDict(dict):
         else:
             raise TypeError()
 
+    @classmethod
+    def init_from(cls, obj):
+        from collections.abc import Iterable
+        assert isinstance(obj, Iterable)
+        new_cd = cls()
+        for item in obj:
+            new_cd.count(item)
+        return new_cd
+
     def set(self, element, value):
         self.__setitem__(element, value)
+        return self
 
     def count(self, element, step=1):
         try:
@@ -52,23 +62,23 @@ class CountingDict(dict):
             raise TypeError()
         return total_num
 
-    def trim(self, lower_limit=None, higher_limit=None, include_lower: bool=False, include_higher: bool=False):
+    def trim(self, lower_limit=None, higher_limit=None):
         """修剪值不符合要求的标签"""
         if lower_limit is not None:
-            for tag in list(self.keys()):
-                if include_lower is True:
-                    if self.__getitem__(tag) < higher_limit:
-                        self.__delitem__(tag)
-                else:
-                    if self.__getitem__(tag) <= higher_limit:
-                        self.__delitem__(tag)
+            for tag in self.keys():
+                if self.__getitem__(tag) < higher_limit:
+                    self.__delitem__(tag)
 
         if higher_limit is not None:
-            for tag in list(self.keys()):
-                if include_higher is True:
-                    if self.__getitem__(tag) > higher_limit:
-                        self.__delitem__(tag)
-                else:
-                    if self.__getitem__(tag) >= higher_limit:
-                        self.__delitem__(tag)
+            for tag in self.keys():
+                if self.__getitem__(tag) > higher_limit:
+                    self.__delitem__(tag)
+
         return self
+
+    @property
+    def sum(self):
+        result = 0
+        for value in self.values():
+            result += value
+        return result

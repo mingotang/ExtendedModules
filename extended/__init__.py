@@ -5,9 +5,14 @@ __version__ = "0.0.1"
 
 # include Package Modules
 from .CountingDict import CountingDict
+from .DataDict import DataDict
 from .EventEngine import EventEngine, EventObject
+from .Exceptions import (
+    ParamMissingError, ParamNoContentError, ParamOutOfRangeError, ParamTypeError,
+    ValueTypeError,
+)
 from .Persist import Pdict, Plist, Pset, PqueueFIFO, PqueueLIFO
 from .ShelveDict import ShelveDict
 
 # include Package methods
-from .Logger import get_screen_logger
+from .Logger import get_logger

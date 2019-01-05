@@ -1,8 +1,8 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
+from collections import defaultdict
 from queue import Queue, Empty
 from threading import Thread
-from collections import defaultdict
 
 
 class EventObject:
