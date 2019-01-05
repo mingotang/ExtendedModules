@@ -1,12 +1,12 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
-from .utils import depreciated
+from extended.utils import depreciated
 
 
-class DataDict(dict):
+class ObjectDict(dict):
 
     def __init__(self):
-        super(DataDict, self).__init__()
+        super(ObjectDict, self).__init__()
 
     @classmethod
     def init_from(cls, obj):
@@ -27,7 +27,7 @@ class DataDict(dict):
         return content
 
     def copy(self):
-        new_d = DataDict()
+        new_d = ObjectDict()
         for k, v in self.items():
             new_d.__setitem__(k, v)
         return new_d
@@ -52,7 +52,7 @@ class DataDict(dict):
         :param inline: whether modify data in self
         :return: DataDict
         """
-        result = DataDict()
+        result = ObjectDict()
 
         if range_start is None:
             for key, value in self.items():
@@ -103,10 +103,10 @@ class DataDict(dict):
         elif isinstance(range_iterable, (str, int, float)):
             range_iterable = (range_iterable, )
         else:
-            from .Exceptions import ParamTypeError
+            from extended.Exceptions import ParamTypeError
             raise ParamTypeError('range_iterable', (set, frozenset, list, tuple), range_iterable)
 
-        result = DataDict()
+        result = ObjectDict()
 
         for key, value in self.items():
             if getattr(value, attr_tag) in range_iterable:
@@ -127,10 +127,10 @@ class DataDict(dict):
         if isinstance(exclude_iterable, (set, frozenset, list, tuple)):
             exclude_iterable = frozenset(exclude_iterable)
         else:
-            from .Exceptions import ParamTypeError
+            from extended.Exceptions import ParamTypeError
             raise ParamTypeError('exclude_iterable', (set, frozenset, list, tuple), exclude_iterable)
 
-        result = DataDict()
+        result = ObjectDict()
 
         for key, value in self.items():
             if getattr(value, attr_tag) not in exclude_iterable:
@@ -169,7 +169,7 @@ class DataDict(dict):
                 continue
 
             if by_value not in grouped_dict:
-                grouped_dict[by_value] = DataDict()
+                grouped_dict[by_value] = ObjectDict()
 
             grouped_dict[by_value][index] = val
 

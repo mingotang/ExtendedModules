@@ -4,15 +4,20 @@
 __version__ = "0.0.1"
 
 # include Package Modules
-from .CountingDict import CountingDict
-from .DataDict import DataDict
 from .EventEngine import EventEngine, EventObject
 from .Exceptions import (
     ParamMissingError, ParamNoContentError, ParamOutOfRangeError, ParamTypeError,
     ValueTypeError,
 )
-from .Persist import Pdict, Plist, Pset, PqueueFIFO, PqueueLIFO
-from .ShelveDict import ShelveDict
+from .Interface import AbstractPersistObject
+
+from .data.CountingDict import CountingDict
+from .data.ObjectDict import ObjectDict
+
+from .persist.ShelveWrapper import ShelveWrapper
 
 # include Package methods
 from .Logger import get_logger
+
+# ---- [depreciated] --- #
+DataDict = ObjectDict

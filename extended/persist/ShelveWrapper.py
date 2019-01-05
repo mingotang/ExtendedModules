@@ -1,25 +1,19 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
 import os
-import logging
 import shelve
+import warnings
 
 from collections.abc import Mapping, Sized
 
 
-class ShelveDict(Mapping, Sized):
+class ShelveWrapper(Mapping, Sized):
 
     def __init__(self, db_path: str, writeback: bool = False, new: bool = False):
-        self.__logger__ = logging.getLogger(self.__class__.__name__)
-        self.__closed_tag__ = False   # tag whether db is closed
-
-        if '.' in db_path:
-            if db_path.split('.')[-1] == 'db':
-                self.__path__ = db_path
-            else:
-                self.__path__ = '.'.join([db_path, 'db'])
-        else:
-            self.__path__ = '.'.join([db_path, 'db'])
+        Mapping.__init__(self)
+        Sized.__init__(self)
+        self.__closed__ = False   # tag whether db is closed
+        self.__path__ = db_path
 
         if os.path.exists(self.__path__):
             if new is True:
@@ -30,8 +24,6 @@ class ShelveDict(Mapping, Sized):
                 raise FileNotFoundError(self.__path__)
             self.__db__ = shelve.open(self.__path__, writeback=writeback, protocol=None)
 
-        self.__logger__.info('Connected to shelve database {}'.format(self.__path__))
-
     @classmethod
     def init_from(cls, data, db_path: str, writeback=False):
         if data is None:
@@ -41,12 +33,9 @@ class ShelveDict(Mapping, Sized):
             for k, v in data.items():
                 new_db[k] = v
         else:
-            raise NotImplementedError
+            from extended.Exceptions import ParamTypeError
+            raise ParamTypeError('data', 'Mapping/NoneType', data)
         return new_db
-
-    @classmethod
-    def connect(cls, db_path: str, writeback=False):
-        return cls(db_path=db_path, writeback=writeback)
 
     def __iter__(self):
         for key in self.keys():
@@ -55,16 +44,16 @@ class ShelveDict(Mapping, Sized):
     def __getitem__(self, key: str):
         return self.__db__[key]
 
-    def __setitem__(self, key: str, data):
-        self.__db__[key] = data
-        self.__closed_tag__ = False
+    def __setitem__(self, key: str, value):
+        self.__db__[key] = value
+        self.__closed__ = False
 
     def __contains__(self, key: str):
         return self.__db__.__contains__(key)
 
     def __delitem__(self, key):
         del self.__db__[key]
-        self.__closed_tag__ = False
+        self.__closed__ = False
 
     def __len__(self):
         return self.__db__.__len__()
@@ -73,13 +62,15 @@ class ShelveDict(Mapping, Sized):
         return self.__db__.keys()
 
     def values(self):
-        return self.__db__.values()
+        for key in self.keys():
+            yield self.__getitem__(key)
 
     def items(self):
-        return self.__db__.items()
+        for key in self.keys():
+            yield key, self.__getitem__(key)
 
-    def set(self, key: str, data):
-        self.__setitem__(key, data)
+    def set(self, key: str, value):
+        self.__setitem__(key, value)
 
     def get(self, key, default=None):
         try:
@@ -89,31 +80,28 @@ class ShelveDict(Mapping, Sized):
 
     def flush(self):
         self.__db__.sync()
-        self.__closed_tag__ = False
+        self.__closed__ = False
 
     def clear(self):
         self.__db__.clear()
-        self.__closed_tag__ = False
-        self.__logger__.info('shelve database {} cleared.'.format(self.__path__))
+        self.__closed__ = False
+        warnings.warn('shelve database {} cleared.'.format(self.__path__))
 
     def close(self):
         self.__db__.close()
-        self.__closed_tag__ = True
-        self.__logger__.info('shelve database {} closed.'.format(self.__path__))
+        self.__closed__ = True
+        warnings.warn('shelve database {} closed.'.format(self.__path__))
 
     def delete(self):
         from os import remove
         self.__db__.clear()
         self.__db__.close()
-        self.__closed_tag__ = True
+        self.__closed__ = True
         remove(self.__path__)
 
     @property
     def is_active(self):
-        return not self.__closed_tag__
-
-    def to_list(self):
-        return [var for var in self.values()]
+        return not self.__closed__
 
     def to_dict(self, key_range=None):
         new_d = dict()
@@ -132,7 +120,8 @@ class ShelveDict(Mapping, Sized):
             for key, value in data.items():
                 self.__setitem__(key, value)
         else:
-            raise NotImplementedError
+            from .Exceptions import ParamTypeError
+            raise ParamTypeError('data', 'Mapping', data)
 
 
 if __name__ == '__main__':
