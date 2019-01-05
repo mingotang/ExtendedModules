@@ -127,7 +127,6 @@ class SingleThreadEventEngine(EventEngine):
 def event_engine_test():
     """测试函数"""
     from datetime import datetime
-    from structures.EventObject import EventObject
 
     def simpletest(event):
         assert isinstance(event, EventObject)

@@ -9,7 +9,7 @@ from collections.abc import Mapping, Sized
 
 class ShelveDict(Mapping, Sized):
 
-    def __init__(self, db_path: str, writeback: bool=False, new: bool=False):
+    def __init__(self, db_path: str, writeback: bool = False, new: bool = False):
         self.__logger__ = logging.getLogger(self.__class__.__name__)
         self.__closed_tag__ = False   # tag whether db is closed
 
