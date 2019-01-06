@@ -90,7 +90,7 @@ class ShelveWrapper(Mapping, Sized):
     def close(self):
         self.__db__.close()
         self.__closed__ = True
-        warnings.warn('shelve database {} closed.'.format(self.__path__))
+        # warnings.warn('shelve database {} closed.'.format(self.__path__))
 
     def delete(self):
         from os import remove

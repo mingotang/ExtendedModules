@@ -4,7 +4,9 @@ from sqlalchemy import Table
 
 
 class SqliteWrapper(object):
-    def __init__(self, db_path: str):
+    connection_dict = dict()
+
+    def __init__(self, db_path: str = ':memory:'):
         from sqlalchemy import create_engine, MetaData
 
         # 建立连接
@@ -14,6 +16,13 @@ class SqliteWrapper(object):
 
         # 若目标表格不存在则创建
         # self.metadata.create_all(bind=self.engine, checkfirst=True)
+
+    @classmethod
+    def get_instance(cls, db_path: str = ':memory:'):
+        if db_path in cls.connection_dict:
+            return cls.connection_dict[db_path]
+        else:
+            return cls(db_path=db_path)
 
     @property
     def session(self):
@@ -47,3 +56,7 @@ class SqliteWrapper(object):
 
     def clean(self):
         self.metadata.drop_all()
+
+    def close(self):
+        self.session.flush()
+        self.session.close()
