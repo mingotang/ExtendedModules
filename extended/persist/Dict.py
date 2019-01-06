@@ -4,6 +4,8 @@ import os
 
 from collections import Mapping, Sized
 
+from extended.Interface import AbstractPersistObject as APO
+
 
 class BasePersistDict(Mapping, Sized):
     __postfix__ = None
@@ -96,5 +98,29 @@ class TextDict(BasePersistDict):
         try:
             with open(self.__sub_file__(full_key), mode='r', encoding=self.__encoding__) as f:
                 return f.read()
+        except FileNotFoundError:
+            raise KeyError('no such key as {}'.format(key))
+
+
+class TextObjDict(TextDict):
+
+    def __init__(self, path: str, obj_type: type, encoding: str = 'utf-8'):
+        BasePersistDict.__init__(self, path)
+
+        assert hasattr(obj_type, APO.__get_state_attribute__)
+        assert hasattr(obj_type, APO.__set_state_attribute__)
+        self.__obj_type__ = obj_type
+        self.__encoding__ = encoding
+
+    def __setitem__(self, key: str, value):
+        full_key = self.__check_postfix__(key)
+        with open(self.__sub_file__(full_key), mode='w', encoding=self.__encoding__) as f:
+            f.write(getattr(value, APO.__get_state_attribute__))
+
+    def __getitem__(self, key: str):
+        full_key = self.__check_postfix__(key)
+        try:
+            with open(self.__sub_file__(full_key), mode='r', encoding=self.__encoding__) as f:
+                return getattr(self.__obj_type__, APO.__set_state_attribute__).__call__(f.read())
         except FileNotFoundError:
             raise KeyError('no such key as {}'.format(key))

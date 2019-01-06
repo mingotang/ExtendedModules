@@ -14,7 +14,10 @@ from .Interface import AbstractPersistObject
 from .data.CountingDict import CountingDict
 from .data.ObjectDict import ObjectDict
 
-from .persist.ShelveWrapper import ShelveWrapper
+from .persist.Dict import TextDict, TextObjDict
+
+from .wrapper.Shelve import ShelveWrapper
+from .wrapper.Sqlite import SqliteWrapper
 
 # include Package methods
 from .Logger import get_logger

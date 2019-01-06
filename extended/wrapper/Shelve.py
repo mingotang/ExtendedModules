@@ -120,7 +120,7 @@ class ShelveWrapper(Mapping, Sized):
             for key, value in data.items():
                 self.__setitem__(key, value)
         else:
-            from .Exceptions import ParamTypeError
+            from extended.Exceptions import ParamTypeError
             raise ParamTypeError('data', 'Mapping', data)
 
 
