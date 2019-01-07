@@ -11,6 +11,7 @@ from .Exceptions import (
 )
 from .Interface import AbstractPersistObject
 
+# include folder Package Modules
 from .data.CountingDict import CountingDict
 from .data.ObjectDict import ObjectDict
 
@@ -20,6 +21,7 @@ from .wrapper.Shelve import ShelveWrapper
 from .wrapper.Sqlite import SqliteWrapper
 
 # include Package methods
+from .Decoration import depreciated_method
 from .Logger import get_logger
 
 # ---- [depreciated] --- #

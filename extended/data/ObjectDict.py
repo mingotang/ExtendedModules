@@ -1,6 +1,6 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
-from extended.utils import depreciated
+from extended.Decoration import depreciated_method
 
 
 class ObjectDict(dict):
@@ -86,7 +86,7 @@ class ObjectDict(dict):
         else:
             return result
 
-    @depreciated('trim_include_between_attr_value')
+    @depreciated_method('trim_include_between_attr_value')
     def trim_between_range(self, *args, **kwargs):
         return self.trim_include_between_attr_value(*args, **kwargs)
 
@@ -119,7 +119,7 @@ class ObjectDict(dict):
         else:
             return result
 
-    @depreciated('trim_include_by_attr_value')
+    @depreciated_method('trim_include_by_attr_value')
     def trim_by_range(self, *args, **kwargs):
         return self.trim_include_by_attr_value(*args, **kwargs)
 
@@ -143,7 +143,7 @@ class ObjectDict(dict):
         else:
             return result
 
-    @depreciated('trim_exclude_by_attr_value')
+    @depreciated_method('trim_exclude_by_attr_value')
     def trim_exclude_range(self, *args, **kwargs):
         return self.trim_exclude_by_attr_value(*args, **kwargs)
 
@@ -175,7 +175,7 @@ class ObjectDict(dict):
 
         return grouped_dict
 
-    @depreciated('group_by_attr')
+    @depreciated_method('group_by_attr')
     def group_by(self, *args, **kwargs):
         return self.group_by_attr(*args, **kwargs)
 
