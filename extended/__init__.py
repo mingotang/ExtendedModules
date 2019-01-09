@@ -23,6 +23,7 @@ from .wrapper.Sqlite import SqliteWrapper
 # include Package methods
 from .Decoration import depreciated_method
 from .Logger import get_logger
+from .Path import Path
 
 # ---- [depreciated] --- #
 DataDict = ObjectDict

@@ -116,7 +116,12 @@ class Path(object):
                 else:
                     raise FileExistsError('target file {} already exists.'.format(target_path))
             elif self.is_folder:
-                raise NotImplementedError
+                folder_list, file_list = self.list()
+                for file in file_list:
+                    file.move_to(target_path, overwrite=overwrite)
+                for folder in folder_list:
+                    folder.move_to(target_path, overwrite=overwrite)
+                return target_path
             else:
                 raise RuntimeError(self.str)
         else:
@@ -145,7 +150,12 @@ class Path(object):
                 else:
                     raise FileExistsError('target file {} already exists.'.format(target_path))
             elif self.is_folder:
-                raise NotImplementedError
+                folder_list, file_list = self.list()
+                for file in file_list:
+                    file.copy_to(target_path, overwrite=overwrite)
+                for folder in folder_list:
+                    folder.copy_to(target_path, overwrite=overwrite)
+                return target_path
             else:
                 raise RuntimeError(self.str)
         else:
