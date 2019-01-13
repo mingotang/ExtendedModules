@@ -37,16 +37,18 @@ class CountingDict(dict):
 
     def sort(self, inverse=False):
         """ 按照值从小到大排序 """
-        stored_list = list(self.keys())
-        for index_x in range(len(stored_list)):
-            for index_y in range(index_x + 1, len(stored_list)):
-                if self[stored_list[index_x]] > self[stored_list[index_y]]:
-                    stored_list[index_x], stored_list[index_y] = stored_list[index_y], stored_list[index_x]
-        if inverse is True:
-            stored_list.reverse()
-            return stored_list
-        else:
-            return stored_list
+        stored_list = sorted(self.keys(), key=lambda x: self.__getitem__(x), reverse=inverse)
+        return stored_list
+        # stored_list = list(self.keys())
+        # for index_x in range(len(stored_list)):
+        #     for index_y in range(index_x + 1, len(stored_list)):
+        #         if self[stored_list[index_x]] > self[stored_list[index_y]]:
+        #             stored_list[index_x], stored_list[index_y] = stored_list[index_y], stored_list[index_x]
+        # if inverse is True:
+        #     stored_list.reverse()
+        #     return stored_list
+        # else:
+        #     return stored_list
 
     def weights(self, tag_or_list=None):
         """根据 tag_or_list 的标签收集权重信息"""
@@ -65,12 +67,12 @@ class CountingDict(dict):
     def trim(self, lower_limit=None, higher_limit=None):
         """修剪值不符合要求的标签"""
         if lower_limit is not None:
-            for tag in self.keys():
-                if self.__getitem__(tag) < higher_limit:
+            for tag in list(self.keys()):
+                if self.__getitem__(tag) < lower_limit:
                     self.__delitem__(tag)
 
         if higher_limit is not None:
-            for tag in self.keys():
+            for tag in list(self.keys()):
                 if self.__getitem__(tag) > higher_limit:
                     self.__delitem__(tag)
 

@@ -1,6 +1,7 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
 from sqlalchemy import Table
+from sqlalchemy.orm import mapper
 
 
 class SqliteWrapper(object):
@@ -38,7 +39,6 @@ class SqliteWrapper(object):
 
     @staticmethod
     def map(obj_type: type, table_def: Table):
-        from sqlalchemy.orm import mapper
         mapper(obj_type, table_def)
 
     def add_all(self, obj):
