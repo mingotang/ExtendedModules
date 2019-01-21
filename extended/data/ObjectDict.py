@@ -38,6 +38,32 @@ class ObjectDict(dict):
             new_d[k] = v
         return new_d
 
+    def find_value(self, **kwargs):
+        target_dict = self.find_value_where(**kwargs)
+        if len(target_dict) == 1:
+            return list(target_dict.values())[0]
+        if len(target_dict) == 0:
+            raise ValueError('No value satisfy {}'.format(kwargs))
+        else:
+            raise RuntimeError('Unknown Error {}'.format(str(target_dict)))
+
+    def find_value_where(self, **kwargs):
+        """
+        find values by constrains -> ObjectDict
+        :param kwargs:
+        :return: DataList, list of stored value
+        """
+        target_dict = ObjectDict()
+        for key, value in self.items():
+            all_check = True
+            for c_key, c_value in kwargs.items():
+                if getattr(value, c_key) != c_value:
+                    all_check = False
+                    break
+            if all_check is True:
+                target_dict[key] = value
+        return target_dict
+
     def trim_include_between_attr_value(
             self, attr_tag: str, range_start, range_end,
             include_start: bool = True, include_end: bool = False, inline: bool = False
