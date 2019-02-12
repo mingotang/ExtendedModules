@@ -27,3 +27,20 @@ from .Path import Path
 
 # ---- [depreciated] --- #
 DataDict = ObjectDict
+
+
+def is_chinese_char(char: str):
+    assert len(char) == 1
+    if '\u4e00' <= char <= '\u9fff':
+        return True
+    else:
+        return False
+
+
+def is_english_char(char: str):
+    import re
+    assert len(char) == 1
+    if re.match(r'[a-zA-Z]', char, re.I):
+        return True
+    else:
+        return False
