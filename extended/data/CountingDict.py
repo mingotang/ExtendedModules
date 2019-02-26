@@ -35,9 +35,9 @@ class CountingDict(dict):
         except KeyError:
             self.__setitem__(element, step)
 
-    def sort(self, inverse=False):
+    def sort(self, reverse=False):
         """ 按照值从小到大排序 """
-        stored_list = sorted(self.keys(), key=lambda x: self.__getitem__(x), reverse=inverse)
+        stored_list = sorted(self.keys(), key=lambda x: self.__getitem__(x), reverse=reverse)
         return stored_list
         # stored_list = list(self.keys())
         # for index_x in range(len(stored_list)):

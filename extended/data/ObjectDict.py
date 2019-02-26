@@ -242,7 +242,7 @@ class ObjectDict(dict):
 
     def collect_attr_set(self, attr_tag: str):
         """
-        收集出现过的属性内容
+        收集出现过的属性内容至一个集合 -> set
         :param attr_tag: str
         :return: set()
         """
@@ -254,6 +254,7 @@ class ObjectDict(dict):
         return collected_set
 
     def collect_attr_list(self, attr_tag: str):
+        """ 收集出现过的属性内容至一个列表 -> list"""
         collected_list = list()
 
         for obj in self.values():
@@ -261,20 +262,32 @@ class ObjectDict(dict):
 
         return collected_list
 
-    # def count_attr(self, attr_tag: str):
-    #     """
-    #     对出现过的属性内容计数
-    #     :param attr_tag: str
-    #     :return: CountingDict
-    #     """
-    #     counted_dict = CountingDict()
-    #
-    #     for obj in self.values():
-    #         counted_dict.count(getattr(obj, attr_tag))
-    #
-    #     return counted_dict
+    def count_attr_obj(self, attr_tag: str):
+        """
+        对出现过的属性对象计数 -> CountingDict
+        :param attr_tag: str
+        :return: CountingDict
+        """
+        from extended.data.CountingDict import CountingDict
 
-    # def sort_by_attr(self, attr_tag: str):
-    #     new_list = OrderedList(self.__data_type__, attr_tag)
-    #     new_list.extend(list(self.values()))
-    #     return new_list
+        counted_dict = CountingDict()
+
+        for obj in self.values():
+            counted_dict.count(getattr(obj, attr_tag))
+
+        return counted_dict
+
+    def count_attr_iterable(self, attr_tag: str):
+        """对字典储存对象的属性列表中的对象计数 -> CountingDict"""
+        from collections import Iterable
+        from extended.data.CountingDict import CountingDict
+
+        counted_dict = CountingDict()
+
+        for obj in self.values():
+            attr_iterable = getattr(obj, attr_tag)
+            assert isinstance(attr_iterable, Iterable), 'tag {} obj {}'.format(attr_tag, str(obj))
+            for item in attr_iterable:
+                counted_dict.count(item)
+
+        return counted_dict
