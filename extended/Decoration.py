@@ -12,7 +12,7 @@ def depreciated_method(new_name: str):
                 assert isinstance(tb_info, traceback.FrameSummary)
                 warnings.warn('[depreciated]: {} at line {} {}'.format(tb_info.filename, tb_info.lineno, tb_info.line))
             warnings.warn(
-                'method {} is depreciated and will be removed in the future, please use {} instead.'.format(
+                'method <{}> is depreciated and will be removed in the future, please use {} instead.'.format(
                     getattr(func, '__name__', str(func)), new_name)
             )
             return func.__call__(*args, **kwargs)
