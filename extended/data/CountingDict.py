@@ -18,12 +18,24 @@ class CountingDict(dict):
 
     @classmethod
     def init_from(cls, obj):
-        from collections.abc import Iterable
-        assert isinstance(obj, Iterable)
+        from collections.abc import Iterable, Mapping
         new_cd = cls()
-        for item in obj:
-            new_cd.count(item)
+        if isinstance(obj, Mapping):
+            for k, v in obj.items():
+                new_cd[k] = v
+        elif isinstance(obj, Iterable):
+            for item in obj:
+                new_cd.count(item)
+        else:
+            raise NotImplementedError(type(obj))
         return new_cd
+
+    def sub_dict(self, dict_keys):
+        new_d = CountingDict()
+        for k, v in self.items():
+            if k in dict_keys:
+                new_d[k] = v
+        return new_d
 
     def set(self, element, value):
         self.__setitem__(element, value)

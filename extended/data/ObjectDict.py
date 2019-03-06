@@ -1,12 +1,13 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
+from extended.Interface import AbstractDataStructure
 from extended.Decoration import depreciated_method
 
 
-class ObjectDict(dict):
+class ObjectDict(dict, AbstractDataStructure):
 
-    def __init__(self):
-        super(ObjectDict, self).__init__()
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
 
     @classmethod
     def init_from(cls, obj):
@@ -64,6 +65,13 @@ class ObjectDict(dict):
                 target_dict[key] = value
         return target_dict
 
+    def trim_include_by_keys(self, keys):
+        result = ObjectDict()
+        for k, v in self.items():
+            if k in keys:
+                result[k] = v
+        return result
+
     def trim_include_between_attr_value(
             self, attr_tag: str, range_start, range_end,
             include_start: bool = True, include_end: bool = False, inline: bool = False
@@ -111,10 +119,6 @@ class ObjectDict(dict):
             return self
         else:
             return result
-
-    @depreciated_method('trim_include_between_attr_value')
-    def trim_between_range(self, *args, **kwargs):
-        return self.trim_include_between_attr_value(*args, **kwargs)
 
     def trim_include_by_attr_value(self, attr_tag: str, range_iterable, inline: bool = False):
         """
@@ -181,8 +185,8 @@ class ObjectDict(dict):
         """
         grouped_dict = dict()
 
-        for index, val in self.items():
-            obj = self.__getitem__(index)
+        for index, obj in self.items():
+            # obj = self.__getitem__(index)
             by_value = getattr(obj, attr_tag)
 
             if by_value is None:
@@ -197,13 +201,9 @@ class ObjectDict(dict):
             if by_value not in grouped_dict:
                 grouped_dict[by_value] = ObjectDict()
 
-            grouped_dict[by_value][index] = val
+            grouped_dict[by_value][index] = obj
 
         return grouped_dict
-
-    @depreciated_method('group_by_attr')
-    def group_by(self, *args, **kwargs):
-        return self.group_by_attr(*args, **kwargs)
 
     def group_attr_set_by(self, group_attr: str, by_attr: str):
         """

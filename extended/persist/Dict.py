@@ -4,10 +4,11 @@ import os
 
 from collections import Mapping, Sized
 
-from extended.Interface import AbstractPersistObject as APO
+from extended.Interface import AbstractPersistObject
+from extended.Interface import AbstractPersistStructure
 
 
-class BasePersistDict(Mapping, Sized):
+class BasePersistDict(Mapping, Sized, AbstractPersistStructure):
     __postfix__ = None
 
     def __init__(self, path: str):
@@ -17,23 +18,14 @@ class BasePersistDict(Mapping, Sized):
         os.makedirs(path, exist_ok=True)
         self.__path__ = path
 
+    def __iter__(self):
+        return self.keys()
+
     def __getitem__(self, key: str):
         raise NotImplementedError
 
     def __setitem__(self, key: str, value):
         raise NotImplementedError
-
-    def __check_postfix__(self, key: str):
-        if '.' in key:
-            if key.split('.')[-1] == self.__postfix__:
-                return key
-            else:
-                return '{}.{}'.format(key, self.__postfix__)
-        else:
-            return '{}.{}'.format(key, self.__postfix__)
-
-    def __sub_file__(self, file_name: str):
-        return os.path.join(self.__path__, file_name)
 
     def get(self, k: str, default=None):
         try:
@@ -45,13 +37,7 @@ class BasePersistDict(Mapping, Sized):
                 return default
 
     def __keys__(self):
-        for tag in os.listdir(self.__path__):
-            if tag.startswith('.'):
-                continue
-            elif not tag.endswith(self.__postfix__):
-                continue
-            else:
-                yield '.'.join(tag.split('.')[:-1])
+        return self.__list_path__()
 
     def __len__(self):
         return len(list(self.__keys__()))
@@ -79,6 +65,13 @@ class BasePersistDict(Mapping, Sized):
         for k, v in mapping.items():
             self.__setitem__(k, v)
 
+    def to_object_dict(self):
+        from extended.data.ObjectDict import ObjectDict
+        new_d = ObjectDict()
+        for k, v in self.items():
+            new_d[k] = v
+        return new_d
+
 
 class TextDict(BasePersistDict):
     __postfix__ = 'txt'
@@ -89,14 +82,15 @@ class TextDict(BasePersistDict):
         self.__encoding__ = encoding
 
     def __setitem__(self, key: str, value):
+        assert isinstance(value, str), 'TextDict value should be in type `str`.'
         full_key = self.__check_postfix__(key)
-        with open(self.__sub_file__(full_key), mode='w', encoding=self.__encoding__) as f:
+        with open(self.__sub_path__(full_key), mode='w', encoding=self.__encoding__) as f:
             f.write(value)
 
     def __getitem__(self, key: str):
         full_key = self.__check_postfix__(key)
         try:
-            with open(self.__sub_file__(full_key), mode='r', encoding=self.__encoding__) as f:
+            with open(self.__sub_path__(full_key), mode='r', encoding=self.__encoding__) as f:
                 return f.read()
         except FileNotFoundError:
             raise KeyError('no such key as {}'.format(key))
@@ -106,21 +100,21 @@ class TextObjDict(TextDict):
 
     def __init__(self, path: str, obj_type: type, encoding: str = 'utf-8'):
         BasePersistDict.__init__(self, path)
-
-        assert hasattr(obj_type, APO.__get_state_attribute__)
-        assert hasattr(obj_type, APO.__set_state_attribute__)
+        assert hasattr(obj_type, AbstractPersistObject.__get_state_attribute__)
+        assert hasattr(obj_type, AbstractPersistObject.__set_state_attribute__)
         self.__obj_type__ = obj_type
         self.__encoding__ = encoding
 
     def __setitem__(self, key: str, value):
+        assert isinstance(value, AbstractPersistObject)
         full_key = self.__check_postfix__(key)
-        with open(self.__sub_file__(full_key), mode='w', encoding=self.__encoding__) as f:
-            f.write(getattr(value, APO.__get_state_attribute__))
+        with open(self.__sub_path__(full_key), mode='w', encoding=self.__encoding__) as f:
+            f.write(getattr(value, AbstractPersistObject.__get_state_attribute__).__call__())
 
     def __getitem__(self, key: str):
         full_key = self.__check_postfix__(key)
         try:
-            with open(self.__sub_file__(full_key), mode='r', encoding=self.__encoding__) as f:
-                return getattr(self.__obj_type__, APO.__set_state_attribute__).__call__(f.read())
+            with open(self.__sub_path__(full_key), mode='r', encoding=self.__encoding__) as f:
+                return getattr(self.__obj_type__, AbstractPersistObject.__set_state_attribute__).__call__(f.read())
         except FileNotFoundError:
             raise KeyError('no such key as {}'.format(key))
