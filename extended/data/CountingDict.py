@@ -47,10 +47,19 @@ class CountingDict(dict):
         except KeyError:
             self.__setitem__(element, step)
 
-    def sort(self, reverse=False):
+    def sort(self, reverse: bool = False, limit: int = None):
         """ 按照值从小到大排序 """
         stored_list = sorted(self.keys(), key=lambda x: self.__getitem__(x), reverse=reverse)
-        return stored_list
+        if limit is None:
+            return stored_list
+        elif isinstance(limit, int):
+            assert limit > 0
+            if len(stored_list) > limit:
+                return stored_list[:limit]
+            else:
+                return stored_list
+        else:
+            raise NotImplementedError('{} {}'.format(reverse, limit))
         # stored_list = list(self.keys())
         # for index_x in range(len(stored_list)):
         #     for index_y in range(index_x + 1, len(stored_list)):
