@@ -40,6 +40,7 @@ class SqliteWrapper(object):
     @staticmethod
     def map(obj_type: type, table_def: Table):
         mapper(obj_type, table_def)
+        table_def.create(checkfirst=True)
 
     def add_all(self, obj):
         if len(obj) > 0:
