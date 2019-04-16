@@ -64,12 +64,12 @@ class Path(object):
 
     @property
     def ksize(self):
-        """size in KB -> int"""
+        """size in KB -> float"""
         return os.stat(self.__path__).st_size
 
     @property
     def msize(self):
-        """size in MB -> int"""
+        """size in MB -> float"""
         return os.stat(self.str).st_size / SYS_MB_BYTES
 
     @property
@@ -102,7 +102,7 @@ class Path(object):
             raise NotImplementedError(type(folder_path))
 
         # 检查目标目录
-        if not os.path.exists(folder_path):
+        if not os.path.exists(folder_path.str):
             os.makedirs(folder_path.str)
         if not folder_path.is_folder:
             raise RuntimeError('target path is not folder: {}.'.format(folder_path))
@@ -136,7 +136,7 @@ class Path(object):
             raise NotImplementedError(type(folder_path))
 
         # 检查目标目录
-        if not os.path.exists(folder_path):
+        if not os.path.exists(folder_path.str):
             os.makedirs(folder_path.str)
         if not folder_path.is_folder:
             raise RuntimeError('target path is not folder: {}.'.format(folder_path))
@@ -161,11 +161,14 @@ class Path(object):
         else:
             return Path(shutil.copy(self.str, folder_path.str))
 
-    def list(self):
+    def list(self, ignore_prefix=('.', )):
         """list the folder -> folder_list, file_list"""
         if self.is_folder:
             folder_list, file_list = list(), list()
             for name in os.listdir(self.str):
+                for prefix in ignore_prefix:
+                    if name.startswith(prefix):
+                        continue
                 sub_path = self.sub_path(name)
                 if sub_path.is_file:
                     file_list.append(sub_path)
@@ -176,6 +179,16 @@ class Path(object):
             return folder_list, file_list
         else:
             raise RuntimeError('Non folder can not list.'.format(self))
+
+    def list_folder(self, ignore_prefix=('.', )):
+        """list folders in folder -> list"""
+        folder_list, file_list = self.list(ignore_prefix=ignore_prefix)
+        return folder_list
+
+    def list_file(self, ignore_prefix=('.', )):
+        """list files in folder -> list"""
+        folder_list, file_list = self.list(ignore_prefix=ignore_prefix)
+        return file_list
 
     def delete(self):
         if self.is_folder:
