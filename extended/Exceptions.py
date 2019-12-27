@@ -49,8 +49,8 @@ class ParamOutOfRangeError(ValueError):
 
 
 class ParamNoContentError(ValueError):
-    def __init__(self, param_name: str):
-        self.name = param_name
+    def __init__(self, param_name):
+        self.name = repr(param_name)
 
     def __repr__(self):
         return 'param {0:s} gets no content'.format(self.name)
