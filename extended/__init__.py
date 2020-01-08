@@ -19,7 +19,6 @@ from .data.ObjectList import ObjectList
 from .persist.Dict import TextDict, TextObjDict
 
 from .wrapper.Shelve import ShelveWrapper
-from .wrapper.Sqlite import SqliteWrapper
 
 # include Package methods
 from .Decoration import depreciated_method
