@@ -57,22 +57,59 @@ class MySQL(object):
         return MetaData(bind=self.engine(db_name=db_name))
 
     def execute(self, db_name: str, sql: str):
-        self.engine(db_name).execute(sql)
+        try:
+            self.engine(db_name).execute(sql)
+        except Exception as exec_error:
+            print(sql)
+            raise exec_error
 
     def read_pd_query(self, db_name: str, sql: str):
         from pandas import read_sql_query
         return read_sql_query(sql, self.engine(db_name))
 
+    def read_dict_query(self, db_name: str, sql: str):
+        dt = self.read_pd_query(db_name, sql)
+        re_list = list()
+        for i in dt.index:
+            one_series = dt.iloc[i,]
+            re_list.append(one_series.to_dict())
+        return re_list
+
     def insert_data_list(self, db_name: str, table_name: str, data_list):
         assert isinstance(data_list, list), '{}\n{}'.format(type(data_list), data_list)
-        if len(data_list) > 0:
-            for obj in data_list:
-                sql = getattr(obj, 'form_insert_sql').__call__(table_name)
-                try:
-                    self.execute(db_name, sql)
-                except BaseException as i_e:
-                    print(obj)
-                    raise i_e
+        if len(data_list) == 0:
+            return
+        for obj in data_list:
+            self.insert_data_obj(db_name=db_name, table_name=table_name, data_obj=obj)
+
+    def insert_data_obj(self, db_name: str, table_name: str, data_obj):
+        if hasattr(data_obj, 'form_insert_sql'):
+            sql = getattr(data_obj, 'form_insert_sql').__call__(table_name)
+            self.execute(db_name, sql)
+        elif isinstance(data_obj, dict):
+            self.__insert_dict_obj__(db_name, table_name, data_obj)
+        else:
+            raise NotImplementedError('{}-{}'.format(type(data_obj), data_obj))
+
+    def __insert_dict_obj__(self, db_name: str, table_name: str, dict_obj):
+        from extended.utils import is_valid_float
+        assert isinstance(dict_obj, dict), 'dict_obj should has format dict or super_dict'
+        col_list, data_list = list(dict_obj.keys()), list()
+        for key in col_list:
+            cell = dict_obj[key]
+            if cell is None:
+                data_list.append("''")
+            elif isinstance(cell, float):
+                if not is_valid_float(cell):
+                    data_list.append("null")
+                else:
+                    data_list.append(str(cell))
+            elif isinstance(cell, int):
+                data_list.append(str(cell))
+            else:
+                data_list.append("'{}'".format(cell))
+        sql = 'INSERT INTO {} ({}) VALUES ({})'.format(table_name, ', '.join(col_list), ', '.join(data_list))
+        self.execute(db_name, sql)
 
     @staticmethod
     def map(obj_type: type, table_def: Table, create_table: bool = True):

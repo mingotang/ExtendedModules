@@ -2,6 +2,10 @@
 # ---------------------------------import------------------------------------
 
 
+class DictObject(dict):
+    pass
+
+
 class AbstractDataObject:
     inner2outer_map = None
 
@@ -95,10 +99,6 @@ class AttributeObject(AbstractDataObject):
             return self.__dict__.__getitem__(key)
         except KeyError:
             raise AttributeError('No such attribute as {}'.format(key))
-            # if key in self.inner2outer_map:
-            #     return None
-            # else:
-            #     raise AttributeError('No such attribute as {}'.format(key))
 
     @classmethod
     def from_dict(cls, dict_data: dict):
