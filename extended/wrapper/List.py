@@ -1,8 +1,9 @@
 # -*- encoding: UTF-8 -*-
 # ---------------------------------import------------------------------------
+from extended.Interface import AbstractDataStructure
 
 
-class List(list):
+class List(list, AbstractDataStructure):
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args, **kwargs)
 

@@ -21,22 +21,29 @@ class AbstractDataStructure:
     ):
         raise NotImplementedError
 
-    @depreciated_method('trim_include_between_attr_value')
-    def trim_between_range(self, *args, **kwargs):
-        return self.trim_include_between_attr_value(*args, **kwargs)
-
     def group_by_attr(self, attr_tag: str):
         raise NotImplementedError
-
-    @depreciated_method('group_by_attr')
-    def group_by(self, *args, **kwargs):
-        return self.group_by_attr(*args, **kwargs)
 
     def collect_attr_set(self, attr_tag: str):
         raise NotImplementedError
 
+    def collect_key_value_set(self, key_tag: str):
+        raise NotImplementedError
+
     def collect_attr_list(self, attr_tag: str):
         raise NotImplementedError
+
+    def collect_key_value_list(self, key_tag: str):
+        raise NotImplementedError
+
+    # ----------------- [depreciated] -----------------
+    @depreciated_method('trim_include_between_attr_value')
+    def trim_between_range(self, *args, **kwargs):
+        return self.trim_include_between_attr_value(*args, **kwargs)
+
+    @depreciated_method('group_by_attr')
+    def group_by(self, *args, **kwargs):
+        return self.group_by_attr(*args, **kwargs)
 
 
 class AbstractPersistObject:
