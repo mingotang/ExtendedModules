@@ -29,8 +29,10 @@ class List(list):
         target_list = cls()
         for d_obj in d_list:
             assert isinstance(d_obj, dict)
-            assert hasattr(d_type, 'from_dict')
-            target_list.append(getattr(d_type, 'from_dict').__call__(d_obj))
+            if hasattr(d_type, 'from_dict'):
+                target_list.append(getattr(d_type, 'from_dict').__call__(d_obj))
+            else:
+                target_list.append(d_type(**d_obj))
         return target_list
 
     @classmethod
