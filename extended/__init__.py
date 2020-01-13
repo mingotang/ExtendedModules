@@ -14,7 +14,6 @@ from .Interface import AbstractPersistObject
 # include folder Package Modules
 from .data.CountingDict import CountingDict
 from .data.ObjectDict import ObjectDict
-from .data.ObjectList import ObjectList
 
 from .persist.Dict import TextDict, TextObjDict
 
