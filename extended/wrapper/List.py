@@ -8,10 +8,11 @@ class List(list, AbstractDataStructure):
         list.__init__(self, *args, **kwargs)
 
     def __repr__(self):
-        content = '[\n'
+        content, iter_count = 'List starts [\n', 0
         for value in self.__iter__():
-            content += '\t{},\n'.format(value)
-        content += ']'
+            content += 'index {}: {},\n'.format(iter_count, value)
+            iter_count += 1
+        content += '] List ends'
         return content
 
     @classmethod
@@ -239,6 +240,10 @@ class List(list, AbstractDataStructure):
             collected_dict[getattr(obj, ket_attr)] = getattr(obj, value_attr)
 
         return collected_dict
+
+    def collect_key_value_series(self, index_key: str, data_key: str):
+        from pandas import Series
+        return Series(data=self.collect_key_value_list(data_key), index=self.collect_key_value_list(index_key))
 
     def sum_attr(self, attr_tag: str):
         result = 0.0

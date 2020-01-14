@@ -3,7 +3,12 @@
 
 
 class DictObject(dict):
-    pass
+
+    def __repr__(self):
+        str_list = list()
+        for key, value in self.items():
+            str_list.append('{}={}'.format(key, value))
+        return self.__class__.__name__ + ': ' + ', '.join(str_list) + '; '
 
 
 class AbstractDataObject:
