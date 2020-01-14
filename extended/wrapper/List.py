@@ -207,12 +207,28 @@ class List(list, AbstractDataStructure):
 
         return collected_set
 
+    def collect_key_value_set(self, key_tag: str):
+        collected_set = set()
+
+        for obj in self.__iter__():
+            collected_set.add(obj[key_tag])
+
+        return collected_set
+
     def collect_attr_list(self, attr_tag: str):
         """ 收集出现过的属性内容至一个列表 -> list"""
         collected_list = list()
 
         for obj in self.__iter__():
             collected_list.append(getattr(obj, attr_tag))
+
+        return collected_list
+
+    def collect_key_value_list(self, key_tag: str):
+        collected_list = list()
+
+        for obj in self.__iter__():
+            collected_list.append(obj[key_tag])
 
         return collected_list
 
