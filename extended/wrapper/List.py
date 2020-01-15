@@ -259,6 +259,9 @@ class List(list, AbstractDataStructure):
 
         return result
 
+    def sort_by_key(self, key_tag: str, reverse: bool = False):
+        return sorted(self, key=lambda s: s[key_tag], reverse=reverse)
+
     def to_pd(self):
         from pandas import DataFrame
         type_set = set()
