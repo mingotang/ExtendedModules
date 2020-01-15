@@ -10,6 +10,19 @@ class DictObject(dict):
             str_list.append('{}={}'.format(key, value))
         return self.__class__.__name__ + ': ' + ', '.join(str_list) + '; '
 
+    @classmethod
+    def from_series(cls, pd_data):
+        from pandas import Series
+        if isinstance(pd_data, Series):
+            return cls.from_dict(pd_data.to_dict())
+        else:
+            from extended.Exceptions import ParamTypeError
+            raise ParamTypeError('pd_data', 'pandas.Series', pd_data)
+
+    @classmethod
+    def from_dict(cls, dict_data):
+        return cls(**dict_data)
+
 
 class AbstractDataObject:
     inner2outer_map = None

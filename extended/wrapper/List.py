@@ -61,6 +61,8 @@ class List(list, AbstractDataStructure):
         focus_overwrite = kwargs.get('focus_overwrite', False)
         for obj in self.__iter__():
             for attr_tag, from_to in kwargs.items():
+                if attr_tag in('focus_overwrite', ):
+                    continue
                 if isinstance(from_to, dict) and focus_overwrite is False:
                     if getattr(obj, attr_tag) in from_to:
                         setattr(obj, attr_tag, from_to[getattr(obj, attr_tag)])
@@ -244,6 +246,10 @@ class List(list, AbstractDataStructure):
     def collect_key_value_series(self, index_key: str, data_key: str):
         from pandas import Series
         return Series(data=self.collect_key_value_list(data_key), index=self.collect_key_value_list(index_key))
+
+    def batch_set_key_value(self, key: str, value):
+        for obj in self.__iter__():
+            obj[key] = value
 
     def sum_attr(self, attr_tag: str):
         result = 0.0
