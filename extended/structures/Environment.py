@@ -45,7 +45,10 @@ class Environment(object):
     def exit(self):
 
         for k, v in self.storage.items():
-            exit_tag = self.__exit_strategy__[k]
+            try:
+                exit_tag = self.__exit_strategy__[k]
+            except KeyError:
+                continue
             if exit_tag is None:
                 continue
             elif isinstance(exit_tag, str):
