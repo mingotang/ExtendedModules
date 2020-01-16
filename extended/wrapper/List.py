@@ -203,10 +203,10 @@ class List(list, AbstractDataStructure):
         collected_set = set()
 
         for obj in self.__iter__():
-            if isinstance(obj, dict):
-                collected_set.add(obj[attr_tag])
-            else:
+            try:
                 collected_set.add(getattr(obj, attr_tag))
+            except AttributeError:
+                collected_set.add(obj[attr_tag])
 
         return collected_set
 
@@ -224,6 +224,14 @@ class List(list, AbstractDataStructure):
 
         for obj in self.__iter__():
             collected_list.append(getattr(obj, attr_tag))
+
+        return collected_list
+
+    def collect_attr_combine_list(self, attr_list: list):
+        collected_list = list()
+
+        for obj in self.__iter__():
+            collected_list.append([getattr(obj, var) for var in attr_list])
 
         return collected_list
 
