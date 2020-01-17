@@ -251,6 +251,10 @@ class List(list, AbstractDataStructure):
 
         return collected_dict
 
+    def collect_attr_series(self, index_attr: str, data_attr: str):
+        from pandas import Series
+        return Series(data=self.collect_attr_list(data_attr), index=self.collect_attr_list(index_attr))
+
     def collect_key_value_series(self, index_key: str, data_key: str):
         from pandas import Series
         return Series(data=self.collect_key_value_list(data_key), index=self.collect_key_value_list(index_key))
