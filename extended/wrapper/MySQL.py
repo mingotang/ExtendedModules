@@ -2,7 +2,7 @@
 # ---------------------------------import------------------------------------
 from sqlalchemy import create_engine, Table
 from sqlalchemy.orm import mapper, sessionmaker
-from sqlalchemy.exc import ArgumentError
+from sqlalchemy.exc import ArgumentError, IntegrityError
 
 
 class MySQL(object):
@@ -71,16 +71,22 @@ class MySQL(object):
         dt = self.read_pd_query(db_name, sql)
         re_list = list()
         for i in dt.index:
-            one_series = dt.iloc[i,]
+            one_series = dt.iloc[i, ]
             re_list.append(one_series.to_dict())
         return re_list
 
-    def insert_data_list(self, db_name: str, table_name: str, data_list):
+    def insert_data_list(self, db_name: str, table_name: str, data_list, integrity_error_skip: bool = False):
         assert isinstance(data_list, list), '{}\n{}'.format(type(data_list), data_list)
         if len(data_list) == 0:
             return
         for obj in data_list:
-            self.insert_data_obj(db_name=db_name, table_name=table_name, data_obj=obj)
+            try:
+                self.insert_data_obj(db_name=db_name, table_name=table_name, data_obj=obj)
+            except IntegrityError as integrity_error:
+                if integrity_error_skip is True:
+                    continue
+                else:
+                    raise integrity_error
 
     def insert_data_obj(self, db_name: str, table_name: str, data_obj):
         if hasattr(data_obj, 'form_insert_sql'):
