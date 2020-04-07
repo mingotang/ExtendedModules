@@ -97,7 +97,7 @@ class List(list, AbstractDataStructure):
         if len(target_list) == 1:
             return target_list[0]
         if len(target_list) == 0:
-            raise ValueError('No value satisfy {}'.format(kwargs))
+            raise ValueError('No value satisfy {}\n{}'.format(kwargs, str(self)))
         else:
             raise RuntimeError('Unknown Error {}\n{}'.format(str(kwargs), str(target_list)))
 
