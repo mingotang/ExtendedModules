@@ -97,6 +97,7 @@ class TextDict(BasePersistDict):
 
 
 class TextObjDict(TextDict):
+    __postfix__ = None
 
     def __init__(self, path: str, obj_type: type, encoding: str = 'utf-8'):
         BasePersistDict.__init__(self, path)
