@@ -81,13 +81,23 @@ class List(list, AbstractDataStructure):
             all_check = True
             for c_key, c_value in kwargs.items():
                 if isinstance(c_value, (list, tuple)):
-                    if getattr(value, c_key) not in c_value:
-                        all_check = False
-                        break
+                    try:
+                        if getattr(value, c_key) not in c_value:
+                            all_check = False
+                            break
+                    except AttributeError:
+                        if value[c_key] not in c_value:
+                            all_check = False
+                            break
                 else:
-                    if getattr(value, c_key) != c_value:
-                        all_check = False
-                        break
+                    try:
+                        if getattr(value, c_key) != c_value:
+                            all_check = False
+                            break
+                    except AttributeError:
+                        if value[c_key] != c_value:
+                            all_check = False
+                            break
             if all_check is True:
                 target_list.append(value)
         return target_list
